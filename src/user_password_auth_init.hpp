@@ -21,7 +21,8 @@
 #include <geode/Cache.hpp>
 #include <cstdint>
 
-using namespace apache::geode::client;
+using apache::geode::client::AuthInitialize;
+using apache::geode::client::Properties;
 
 namespace geode_user_password_auth {
 
@@ -30,8 +31,11 @@ class UserPasswordAuthInit : public AuthInitialize {
   UserPasswordAuthInit() {}
   ~UserPasswordAuthInit() {}
 
-  PropertiesPtr getCredentials(PropertiesPtr& securityprops, const char* server);
-  void close() { return; }
+   std::shared_ptr<apache::geode::client::Properties> getCredentials(
+      const std::shared_ptr<apache::geode::client::Properties>& securityprops,
+      const std::string& server) override;
+
+  void close() override;
 };
 }  // namespace geode_user_password_auth
 #endif  //__USER_PASSWORD_AUTH_INIT.HPP__

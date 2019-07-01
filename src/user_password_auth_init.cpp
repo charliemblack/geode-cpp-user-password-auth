@@ -25,23 +25,27 @@ using namespace apache::geode::client;
 namespace geode_user_password_auth {
 
 extern "C" {
-LIBEXP AuthInitialize* createGeodeUserPasswordAuth() {
+AuthInitialize* createGeodeUserPasswordAuth(){
   return new UserPasswordAuthInit();
 }
 }
-
-PropertiesPtr UserPasswordAuthInit::getCredentials(PropertiesPtr& securityprops, const char* server) {
-  CacheablePtr userName;
-  if (securityprops == NULLPTR || (userName = securityprops->find(SECURITY_USERNAME)) == NULLPTR) {
+std::shared_ptr<Properties> UserPasswordAuthInit::getCredentials(
+    const std::shared_ptr<Properties>& securityprops,
+    const std::string& /*server*/) {
+  
+  std::shared_ptr<Cacheable> userName;
+  if (securityprops == nullptr || (userName = securityprops->find(SECURITY_USERNAME)) == nullptr) {
     throw AuthenticationFailedException("UserPasswordAuthInit: user name " "property [" SECURITY_USERNAME "] not set.");
   }
-  PropertiesPtr credentials = Properties::create();
-  credentials->insert(SECURITY_USERNAME, userName->toString()->asChar());
-  CacheablePtr passwd = securityprops->find(SECURITY_PASSWORD);
-  if (passwd == NULLPTR) {
+  std::shared_ptr<Properties> credentials = Properties::create();
+  credentials->insert(SECURITY_USERNAME, userName->toString());
+  std::shared_ptr<Cacheable> passwd = securityprops->find(SECURITY_PASSWORD);
+  if (passwd == nullptr) {
     passwd = CacheableString::create("");
   }
-  credentials->insert(SECURITY_PASSWORD, passwd->toString()->asChar());
+  credentials->insert(SECURITY_PASSWORD, passwd->toString());
   return credentials;
+}
+void UserPasswordAuthInit::close() {
 }
 }  // namespace geode_user_password_auth
